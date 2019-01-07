@@ -90,25 +90,28 @@ var
 	core_pnum = /[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/.source,
 
 	//空白分开
+	// 匹配单词有关
 	// Used for splitting on whitespace
 	core_rnotwhite = /\S+/g,
 
     // A simple way to check for HTML strings
 	// Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
 	// Strict HTML recognition (#11290: must start with <)
+	// 匹配标签和id值
+	// 防止注入
 	rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/,
 
-		//看标签是不是单标签
+		//看标签是不是单标签   <p></p>
 	// Match a standalone tag
 	rsingleTag = /^<(\w+)\s*\/?>(?:<\/\1>|)$/,
 
 	//ie的前缀
 	//找到横杆变成大小写
+	// 转驼峰  包括数字 去掉横杠
 	// Matches dashed string for camelizing
 	rmsPrefix = /^-ms-/,
 	rdashAlpha = /-([\da-z])/gi,
 
-	//转驼峰
 	// Used by jQuery.camelCase as callback to replace()
 	fcamelCase = function( all, letter ) {
 		return letter.toUpperCase();
@@ -116,12 +119,16 @@ var
 
 	//DOM加载
 	// The ready event handler and self cleanup method
-		// 谁先取消事件就会直接走
+	// 谁先取消事件就会直接走
 	completed = function() {
 		document.removeEventListener( "DOMContentLoaded", completed, false );
 		window.removeEventListener( "load", completed, false );
 		jQuery.ready();
 	};
+
+/*
+* 7
+ */
 
 
 // 把prototype 赋给 fn  就是在原型下面找 fn
@@ -131,10 +138,16 @@ jQuery.fn = jQuery.prototype = {
 	// The current version of jQuery being used
 	jquery: core_version,
 
-	//修正指向，简写
+	// 修正指向，简写
+	// 创建对象所拥有的属性  而这属性的创造对象  对于的构造函数
+	// 手动指向 非常容易被修改
 	constructor: jQuery,
 
 	//初始化和参数的管理
+	/*
+	selector 被选择的节点
+	context 选择节点的上下文
+	 */
 	init: function( selector, context, rootjQuery ) {
 		var match, elem;
 
@@ -147,8 +160,11 @@ jQuery.fn = jQuery.prototype = {
 
 		//字符串元素处理
 		// Handle HTML strings
+		// id class 标签 连接组合形式
+		// 还可以创建
 		if ( typeof selector === "string" ) {
 			//找标签
+			// 并且标签的长度大于等于3  <p></p>
 			if ( selector.charAt(0) === "<" && selector.charAt( selector.length - 1 ) === ">" && selector.length >= 3 ) {
 				// Assume that strings that start and end with <> are HTML and skip the regex check
 				match = [ null, selector, null ];
@@ -881,7 +897,7 @@ jQuery.extend({
 	// Multifunctional method to get and set values of a collection
 	// The value/s can optionally be executed if it's a function
 	//  多功能的值操作  一个值就是获取 两个值就是设置  set get
-	//          集合 回调  键 值   是获取还是设置  raw 是不是字符串
+	//  集合 回调  键 值   是获取还是设置  raw 是不是字符串
 	access: function( elems, fn, key, value, chainable, emptyGet, raw ) {
 		var i = 0,
 			length = elems.length,
