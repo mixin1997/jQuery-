@@ -171,7 +171,7 @@ jQuery.fn = jQuery.prototype = {
 
 			} else {
 				//exec
-				//$("#div1")		["#div1",null."div1"]
+				//$("#div1")		["#div1",null,"div1"]
 				// $("<li>hello")	["<li>hello","<li>",null]
 				match = rquickExpr.exec( selector );
 			}
@@ -187,18 +187,37 @@ jQuery.fn = jQuery.prototype = {
 					// scripts is true for back-compat
 					//merge可以合特殊的json形式
 					//在原生中的用法是合并两个数组成为一个数组
+					// parseHTML 把字符串转成字符串
+					/*
+					* parseHTML
+					* 第一个参数 节点
+					* 第二个参数 当前页面 或者 iframe
+					* 第三个参数
+					* 返回的是一个数组
+					 */
+					/*
+					* jQuery.merge 数组合并
+					* 也可以对json进行合并 合成特殊的json形式
+					 */
 					jQuery.merge( this, jQuery.parseHTML(
 						match[1],
 						context && context.nodeType ? context.ownerDocument || context : document,
 						//目的是为了script能不能添加进来
+						// 默认 false 是不能
 						true
 					) );
 
 					//标签直接加属性的形式
 					// HANDLE: $(html, props)
+					// 匹配单标签
+					/*
+					* isPlainObject对象自变量
+					 */
 					if ( rsingleTag.test( match[1] ) && jQuery.isPlainObject( context ) ) {
 						for ( match in context ) {
 							// Properties of context are called as methods if possible
+							// 查询里面有没有这个方法
+							// 如果有就调用
 							if ( jQuery.isFunction( this[ match ] ) ) {
 								this[ match ]( context[ match ] );
 
@@ -213,6 +232,7 @@ jQuery.fn = jQuery.prototype = {
 
 				// HANDLE: $(#id)
 				} else {
+					// 通过原生获取id
 					elem = document.getElementById( match[2] );
 
 					//一个元素只要存在就会有父级
@@ -220,6 +240,7 @@ jQuery.fn = jQuery.prototype = {
 					// nodes that are no longer in the document #6963
 					if ( elem && elem.parentNode ) {
 						// Inject the element directly into the jQuery object
+						// 手动编程1 第0项就是id
 						this.length = 1;
 						this[0] = elem;
 					}
@@ -231,40 +252,48 @@ jQuery.fn = jQuery.prototype = {
 
 			// HANDLE: $(expr, $(...))
 				//find ->sizzle
+				/*
+				rootjQuery $(document)
+
+				context.jquery 是不是jquery对象
+				 */
+                //$("ul",$(document)).find("li") jquery(document).find()
 			} else if ( !context || context.jquery ) {
 				return ( context || rootjQuery ).find( selector );
 
 			// HANDLE: $(expr, context)
 			// (which is just equivalent to: $(context).find(expr)
-				//$("ul",document).find("li")
-                //$("ul",$(document)).find("li")
+                //$("ul",document).find("li")  走else jquery(document).find()
 			} else {
 				return this.constructor( context ).find( selector );
 			}
 
 			//处理节点
 		// HANDLE: $(DOMElement)
-		// 	$(this) $(document)  如果是节点类型肯定有
+		// 	$(this) $(document)  如果是节点类型肯定有 nodeType
 		} else if ( selector.nodeType ) {
 			this.context = this[0] = selector;
 			this.length = 1;
 			return this;
 
-			//处理函数
+			//处理函数  主要是文档加载
 		// HANDLE: $(function)
 		// Shortcut for document ready
 			//  $(function () {})
 			//	document.ready.(function () {})
+			// $(document).ready
 		} else if ( jQuery.isFunction( selector ) ) {
 			return rootjQuery.ready( selector );
 		}
 
+		// $([]) $({})
 		if ( selector.selector !== undefined ) {
 			this.selector = selector.selector;
 			this.context = selector.context;
 		}
 
 		// 将非数组转化成数组	再写个参数就可以转化成json
+		// this 把想要的模式转化成json this.length
 		return jQuery.makeArray( selector, this );
 	},
 
@@ -276,6 +305,7 @@ jQuery.fn = jQuery.prototype = {
 	length: 0,
 
 	//转成数组
+	// 把对象转化成数组  转化成现在是原生的
 	toArray: function() {
 		return core_slice.call( this );
 	},
@@ -283,15 +313,17 @@ jQuery.fn = jQuery.prototype = {
 	// Get the Nth element in the matched element set OR
 	// Get the whole matched element set as a clean array
 	// get方法使他变成原生操作
+	// 不传参就是集合
 	get: function( num ) {
 		return num == null ?
 
-			// Return a 'clean' array
+			// Return a 'clean' array、
+			// 如果没写就表示 取出所有的
 			this.toArray() :
 
 			// Return just the object
 			//也可以从负数开始，-1 2 都是返回的2   长度为3
-			// 【】 针对json  找对应的属性
+			// [] 针对json  找对应的属性
 			( num < 0 ? this[ this.length + num ] : this[ num ] );
 	},
 
